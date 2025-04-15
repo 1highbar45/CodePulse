@@ -100,10 +100,5 @@
         }
       }
     }
-  },
-  "cli": {
-    "cache": {
-      "enabled": false
-    }
   }
 }
