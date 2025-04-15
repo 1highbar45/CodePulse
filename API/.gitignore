@@ -68,3 +68,5 @@ logs/
 # IDE - JetBrains Rider
 .idea/
 *.sln.iml
+
+.angular
