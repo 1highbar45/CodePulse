@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CodePulse.API.Controllers
 {
+    // https://localhost:xxxx/api/categories
     [Route("api/[controller]")]
     [ApiController]
     public class CategoriesController : ControllerBase
@@ -19,9 +20,12 @@ namespace CodePulse.API.Controllers
             this.categoryRepository = categoryRepository;
         }
 
+
         [HttpPost]
-        public async Task<IActionResult> CreateCategory(CreateCategoryRequestDto request)
+        //[Authorize(Roles = "Writer")]
+        public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequestDto request)
         {
+            // Map DTO to Domain Model
             var category = new Category
             {
                 Name = request.Name,
@@ -30,6 +34,7 @@ namespace CodePulse.API.Controllers
 
             await categoryRepository.CreateAsync(category);
 
+            // Domain model to DTO
             var response = new CategoryDto
             {
                 Id = category.Id,
@@ -40,17 +45,17 @@ namespace CodePulse.API.Controllers
             return Ok(response);
         }
 
+        // GET: https://localhost:7226/api/Categories?query=html&sortBy=name&sortDirection=desc
         [HttpGet]
         public async Task<IActionResult> GetAllCategories(
-           //[FromQuery] string? query,
-           //[FromQuery] string? sortBy,
-           //[FromQuery] string? sortDirection,
-           //[FromQuery] int? pageNumber,
-           //[FromQuery] int? pageSize
-        )
+            [FromQuery] string? query,
+            [FromQuery] string? sortBy,
+            [FromQuery] string? sortDirection,
+            [FromQuery] int? pageNumber,
+            [FromQuery] int? pageSize)
         {
-            //var caterogies = await categoryRepository.GetAllAsync(query, sortBy, sortDirection, pageNumber, pageSize);
-            var caterogies = await categoryRepository.GetAllAsync();
+            var caterogies = await categoryRepository
+                .GetAllAsync(query, sortBy, sortDirection, pageNumber, pageSize);
 
             // Map Domain model to DTO
 
@@ -68,6 +73,7 @@ namespace CodePulse.API.Controllers
             return Ok(response);
         }
 
+        // GET: https://localhost:7226/api/categories/{id}
         [HttpGet]
         [Route("{id:Guid}")]
         public async Task<IActionResult> GetCategoryById([FromRoute] Guid id)
@@ -89,8 +95,10 @@ namespace CodePulse.API.Controllers
             return Ok(response);
         }
 
+        // PUT: https://localhost:7226/api/categories/{id}
         [HttpPut]
         [Route("{id:Guid}")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> EditCategory([FromRoute] Guid id, UpdateCategoryRequestDto request)
         {
             // Convert DTO to Domain Model
@@ -123,6 +131,7 @@ namespace CodePulse.API.Controllers
         // DELETE: https://localhost:7226/api/categories/{id}
         [HttpDelete]
         [Route("{id:Guid}")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> DeleteCategory([FromRoute] Guid id)
         {
             var category = await categoryRepository.DeleteAsync(id);
@@ -141,6 +150,18 @@ namespace CodePulse.API.Controllers
             };
 
             return Ok(response);
+        }
+
+
+        // GET: https://localhost:7226/api/categories/count
+        [HttpGet]
+        [Route("count")]
+        //[Authorize(Roles = "Writer")]
+        public async Task<IActionResult> GetCategoriesTotal()
+        {
+            var count = await categoryRepository.GetCount();
+
+            return Ok(count);
         }
     }
 }
