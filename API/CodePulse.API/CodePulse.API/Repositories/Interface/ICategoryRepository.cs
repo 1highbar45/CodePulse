@@ -6,11 +6,11 @@ namespace CodePulse.API.Repositories.Interface
     {
         Task<Category> CreateAsync(Category category);
         Task<IEnumerable<Category>> GetAllAsync(
-            //string? query = null,
-            //string? sortBy = null,
-            //string? sortDirection = null,
-            //int? pageNumber = 1,
-            //int? pageSize = 100
+            string? query = null,
+            string? sortby = null,
+            string? sortdirection = null,
+            int? pagenumber = 1,
+            int? pagesize = 100
         );
 
         Task<Category?> GetById(Guid id);
@@ -19,6 +19,6 @@ namespace CodePulse.API.Repositories.Interface
 
         Task<Category?> DeleteAsync(Guid id);
 
-        //Task<int> GetCount();
+        Task<int> GetCount();
     }
 }
